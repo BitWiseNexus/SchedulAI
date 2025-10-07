@@ -1,3 +1,17 @@
+<<<<<<< HEAD
+=======
+# System Design Document
+**Mail → Calendar AI Agent**  
+**Name:** Aditya Rehpade  
+**College:** Indian Institute of Technology Bhilai
+
+**Personal Email:** adityarehpade1@gmail.com  
+**Institute Email:** adityapr@iitbhilai.ac.in  
+**GitHub:** https://github.com/BitWiseNexus
+
+---
+
+>>>>>>> 0d756f42acb850adb803bb69b78ecc32bee34138
 ## Table of Contents
 1. [Executive Summary](#executive-summary)  
 2. [Architecture Overview](#architecture-overview)  
