@@ -30,7 +30,7 @@ Mail → Calendar AI Agent reads your unread Gmail messages, uses Gemini to extr
 ### 1) Clone and install
 
 ```bash
-git clone https://github.com/BitWiseNexus/SDE_Deliverable_Application.git
+git clone https://github.com/BitWiseNexus/SchedulAI.git
 cd mail-calendar-ai-agent
 
 # Backend
