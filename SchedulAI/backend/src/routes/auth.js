@@ -5,6 +5,9 @@ import { logError, logSuccess, loadGoogleCredentials, logInfo, logDebug } from '
 
 const router = express.Router();
 
+// Frontend base URL (where users are redirected after auth)
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
 // Load credentials and create OAuth2 client
 function createOAuth2Client() {
   try {
@@ -175,7 +178,7 @@ router.get('/google/callback', async (req, res) => {
       <html>
         <head>
           <title>🎉 Authentication Successful</title>
-          <meta http-equiv="refresh" content="2;url=http://localhost:5173?email=${encodeURIComponent(userInfo.email)}&auth=success">
+          <meta http-equiv="refresh" content="2;url=${FRONTEND_URL}?email=${encodeURIComponent(userInfo.email)}&auth=success">
           <style>
             body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background: #f5f5f5; }
             .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -199,7 +202,7 @@ router.get('/google/callback', async (req, res) => {
             </div>
             
             <p class="info">Redirecting to your dashboard in 2 seconds...</p>
-            <p>If not redirected: <a href="http://localhost:5173?email=${encodeURIComponent(userInfo.email)}&auth=success" style="color: #4285f4; text-decoration: none;">Click Here</a></p>
+            <p>If not redirected: <a href="${FRONTEND_URL}?email=${encodeURIComponent(userInfo.email)}&auth=success" style="color: #4285f4; text-decoration: none;">Click Here</a></p>
           </div>
         </body>
       </html>
@@ -276,7 +279,7 @@ router.get('/quick-login/:email', async (req, res) => {
     
     if (user && user.access_token && user.refresh_token) {
       // User is authenticated - redirect to React frontend
-      res.redirect(`http://localhost:5173?email=${encodeURIComponent(email)}&auth=success`);
+      res.redirect(`${FRONTEND_URL}?email=${encodeURIComponent(email)}&auth=success`);
     } else {
       // User not authenticated - redirect to login
       res.redirect('/auth/login?redirect=true');

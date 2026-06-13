@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext.jsx';
-import { handleApiError } from '../services/api.js';
+import { handleApiError, API_BASE_URL } from '../services/api.js';
 
 export const useApi = (apiFunction, dependencies = []) => {
   const [data, setData] = useState(null);
@@ -77,10 +77,10 @@ export const useAuth = () => {
     if (email) {
       // Store email and redirect to quick login
       localStorage.setItem('userEmail', email);
-      window.location.href = `http://localhost:5000/auth/quick-login/${encodeURIComponent(email)}`;
+      window.location.href = `${API_BASE_URL}/auth/quick-login/${encodeURIComponent(email)}`;
     } else {
       // No email, redirect to regular login
-      window.location.href = 'http://localhost:5000/auth/login?redirect=true';
+      window.location.href = `${API_BASE_URL}/auth/login?redirect=true`;
     }
   };
 

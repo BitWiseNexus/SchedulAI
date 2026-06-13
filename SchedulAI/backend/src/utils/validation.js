@@ -20,11 +20,19 @@ export function validateEnvironmentVariables() {
   const errors = [];
   const warnings = [];
 
-  // Check for credentials.json file
+  // Option A: Google credentials provided directly via environment variables
+  // (preferred for hosted deployments where committing credentials.json is unsafe)
+  const hasEnvCredentials = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET;
+
+  // Option B: credentials.json file (used for local development)
   const credentialsPath = process.env.GOOGLE_CREDENTIALS_PATH || './credentials.json';
-  if (!fs.existsSync(credentialsPath)) {
-    errors.push(`Google credentials file not found at: ${credentialsPath}`);
-    errors.push('Please ensure credentials.json is in the backend folder');
+  if (hasEnvCredentials) {
+    if (!process.env.GOOGLE_REDIRECT_URI) {
+      warnings.push('GOOGLE_REDIRECT_URI not set - defaulting to http://localhost:5000/auth/google/callback');
+    }
+  } else if (!fs.existsSync(credentialsPath)) {
+    errors.push(`Google credentials not found.`);
+    errors.push('Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET env vars, or place credentials.json in the backend folder');
   } else {
     try {
       const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
@@ -80,8 +88,19 @@ export function validateEnvironmentVariables() {
 }
 
 export function loadGoogleCredentials() {
+  // Prefer environment variables (hosted deployments)
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    return {
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uris: [
+        process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5000/auth/google/callback'
+      ]
+    };
+  }
+
   const credentialsPath = process.env.GOOGLE_CREDENTIALS_PATH || './credentials.json';
-  
+
   if (!fs.existsSync(credentialsPath)) {
     throw new Error(`Google credentials file not found: ${credentialsPath}`);
   }
@@ -89,18 +108,21 @@ export function loadGoogleCredentials() {
   try {
     const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
     
+    // Allow an env var to override the redirect URI from the file (for deployments)
+    const envRedirect = process.env.GOOGLE_REDIRECT_URI;
+
     // Handle different credential formats
     if (credentials.installed) {
       return {
         client_id: credentials.installed.client_id,
         client_secret: credentials.installed.client_secret,
-        redirect_uris: credentials.installed.redirect_uris || ['http://localhost:5000/auth/google/callback']
+        redirect_uris: envRedirect ? [envRedirect] : (credentials.installed.redirect_uris || ['http://localhost:5000/auth/google/callback'])
       };
     } else if (credentials.web) {
       return {
         client_id: credentials.web.client_id,
         client_secret: credentials.web.client_secret,
-        redirect_uris: credentials.web.redirect_uris || ['http://localhost:5000/auth/google/callback']
+        redirect_uris: envRedirect ? [envRedirect] : (credentials.web.redirect_uris || ['http://localhost:5000/auth/google/callback'])
       };
     } else {
       throw new Error('Unsupported credentials.json format');

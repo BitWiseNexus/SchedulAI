@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { AppProvider } from './context/AppContext.jsx';
 import { useAuth, useUI, useProcessing } from './hooks/useApi.js';
+import { API_BASE_URL } from './services/api.js';
 import Dashboard from './components/Dashboard.jsx';
 import EmailList from './components/EmailList.jsx';
 import CalendarView from './components/CalendarView.jsx';
@@ -24,7 +25,7 @@ const AuthWrapper = ({ children }) => {
         }
 
         try {
-          const response = await fetch('http://localhost:5000/api/database/users');
+          const response = await fetch(`${API_BASE_URL}/api/database/users`);
           const data = await response.json();
           if (data.success && data.users.length > 0) {
             const authenticatedEmail = data.users[0].email;
@@ -77,12 +78,12 @@ const LoginScreen = ({ onLogin }) => {
     e.preventDefault();
     if (email) {
       localStorage.setItem('userEmail', email);
-      window.location.href = `http://localhost:5000/auth/quick-login/${encodeURIComponent(email)}`;
+      window.location.href = `${API_BASE_URL}/auth/quick-login/${encodeURIComponent(email)}`;
     }
   };
 
   const handleQuickLogin = () => {
-    window.location.href = 'http://localhost:5000/auth/login?redirect=true';
+    window.location.href = `${API_BASE_URL}/auth/login?redirect=true`;
   };
 
   return (
